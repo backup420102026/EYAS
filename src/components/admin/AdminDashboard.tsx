@@ -171,7 +171,7 @@ export function AdminDashboard({ passcode, onLogout }: { passcode: string; onLog
           </div>
         </aside>
 
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
           <header className="flex items-center justify-between border-b border-slate-800 bg-[#0d1526] px-5 py-4 lg:hidden">
             <div className="flex items-center gap-2">
               <Atom className="h-5 w-5 text-cyan-300" />

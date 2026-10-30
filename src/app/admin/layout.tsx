@@ -10,6 +10,8 @@ export const metadata: Metadata = {
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div data-theme="dark" className="min-h-screen bg-[#0b1220]">
+      {/* the whole page behind the panel is dark too (no light strip on phones) */}
+      <style>{"html,body{background:#0b1220}"}</style>
       {children}
     </div>
   );
