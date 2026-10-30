@@ -1,0 +1,380 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/* Design tokens. Light is the default; dark via <html data-theme>.    */
+/* Any element with data-theme="dark" (e.g. the admin) re-declares them */
+/* ------------------------------------------------------------------ */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --surface-2: #edf1f6;
+  --ink: #1e293b;
+  --muted: #5a6779;
+  --line: #e1e7ef;
+  --line-strong: #c5cfdc;
+  --accent: #f97316; /* fills: buttons, markers */
+  --accent-hover: #ea6a0a;
+  --accent-ink: #1f1308; /* text on top of an accent fill */
+  --accent-text: #c2410c; /* orange used as TEXT (passes AA on light) */
+  --accent-display: #ea580c; /* orange for very large display type only */
+  --gold: #d99a14;
+  --gold-ink: #92400e;
+  --ok: #0f766e;
+  --danger: #c62828;
+  --band: #0f172a; /* the one dark band of the page */
+  --band-ink: #f1f5f9;
+  --band-accent: #fb923c; /* orange text on the dark band */
+  --blob: #f6e5da; /* soft orange disc behind the hero drawing (plain hex on purpose) */
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b1220;
+  --surface: #111a2e;
+  --surface-2: #16213a;
+  --ink: #f1f5f9;
+  --muted: #9aa8bf;
+  --line: #202b47;
+  --line-strong: #34436a;
+  --accent: #f97316;
+  --accent-hover: #fb8a3c;
+  --accent-ink: #1f1308;
+  --accent-text: #fb923c;
+  --accent-display: #fb923c;
+  --gold: #fbbf24;
+  --gold-ink: #fbbf24;
+  --ok: #2dd4bf;
+  --danger: #f87171;
+  --band: #18233f;
+  --band-ink: #f1f5f9;
+  --band-accent: #fb923c;
+  --blob: #17233f;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-text: var(--accent-text);
+  --color-accent-display: var(--accent-display);
+  --color-gold: var(--gold);
+  --color-gold-ink: var(--gold-ink);
+  --color-ok: var(--ok);
+  --color-danger: var(--danger);
+  --color-band: var(--band);
+  --color-band-ink: var(--band-ink);
+  --color-band-accent: var(--band-accent);
+
+  /* Fonts are loaded by <link> tags in layout.tsx; the system fonts are the fallback */
+  --font-sans: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, "Noto Sans Arabic", system-ui, sans-serif;
+  --font-display: "Cairo", "IBM Plex Sans Arabic", "Segoe UI", Tahoma, "Noto Sans Arabic", system-ui,
+    sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+/* Used by the (always dark) admin panel */
+@theme {
+  --color-navy: #0f172a;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+@media (min-width: 640px) {
+  html {
+    font-size: 17px;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+section[id] {
+  scroll-margin-top: 4.5rem;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 999px;
+  border: 2px solid var(--bg);
+}
+
+/* ------------------------------------------------------------------ */
+/* Components                                                          */
+/* ------------------------------------------------------------------ */
+@layer components {
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: var(--accent-text);
+    padding: 0.15rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+
+  .btn-primary,
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    border-radius: 0.75rem;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition:
+      background-color 0.15s,
+      border-color 0.15s,
+      color 0.15s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: 1px solid var(--accent);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+  }
+  .btn-outline {
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+  }
+  .btn-outline:hover:not(:disabled) {
+    border-color: var(--ink);
+    background: var(--surface-2);
+  }
+  .btn-primary:disabled,
+  .btn-outline:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .field {
+    width: 100%;
+    min-height: 2.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink);
+    padding: 0.65rem 1rem;
+    font-size: 1rem;
+    outline: none;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+  }
+  .field::placeholder {
+    color: var(--muted);
+    opacity: 0.75;
+  }
+  .field:focus,
+  .field:focus-within {
+    border-color: var(--accent-text);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+
+  .bg-dots {
+    background-image: radial-gradient(var(--line-strong) 1px, transparent 1px);
+    background-size: 24px 24px;
+    -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent);
+    mask-image: linear-gradient(to bottom, #000 30%, transparent);
+    opacity: 0.55;
+  }
+}
+
+/* Compatibility: older sections still say text-accent for text. Orange text
+   must use the darker --accent-text to stay readable. */
+.text-accent {
+  color: var(--accent-text);
+}
+
+select option {
+  background-color: var(--surface);
+  color: var(--ink);
+}
+
+/* ------------------------------------------------------------------ */
+/* Motion: one calm entrance on the hero, nothing else floats around   */
+/* ------------------------------------------------------------------ */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise {
+  animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Scroll reveal (class names are toggled by Reveal.tsx)               */
+/* ------------------------------------------------------------------ */
+.reveal-hidden {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.reveal-in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* ------------------------------------------------------------------ */
+/* Count-up numbers: pure CSS, no JS. Set style={{ "--target": n }}.   */
+/* Browsers without @property simply jump to the final number.         */
+/* ------------------------------------------------------------------ */
+@property --num {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+.count {
+  counter-reset: num var(--num);
+  animation: count-up 1.6s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s both;
+}
+.count::after {
+  content: counter(num);
+}
+@keyframes count-up {
+  from {
+    --num: 0;
+  }
+  to {
+    --num: var(--target);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .count {
+    animation: none;
+    --num: var(--target);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Legacy helpers still used by the admin panel (always dark)          */
+/* ------------------------------------------------------------------ */
+.glass {
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+.text-gradient {
+  background: linear-gradient(90deg, #2563eb, #06b6d4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.glow-btn {
+  box-shadow: 0 8px 30px rgba(6, 182, 212, 0.35);
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Certificate printing                                                */
+/* ------------------------------------------------------------------ */
+@page {
+  size: A4 landscape;
+  margin: 0;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #certificate-print-area,
+  #certificate-print-area * {
+    visibility: visible;
+  }
+  #certificate-print-area {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    aspect-ratio: auto;
+    border-radius: 0;
+    margin: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
