@@ -121,7 +121,7 @@ export function Hero({
             className="rise mt-8 flex flex-wrap justify-center gap-x-7 gap-y-3 text-[15px] font-semibold text-ink lg:mt-9 lg:justify-start"
             style={{ animationDelay: "320ms" }}
           >
-            {heroContent.facts.map((fact, i) => {
+            {heroContent.facts(season?.teamMaxSize).map((fact, i) => {
               const Icon = FACT_ICONS[i] ?? IconCheck;
               return (
                 <li key={fact} className="flex items-center gap-2.5">

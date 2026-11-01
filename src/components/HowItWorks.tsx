@@ -1,12 +1,16 @@
 import { Reveal } from "./Reveal";
+import { teamSizeText } from "@/content/hero";
 
-const STEPS = [
+const steps = (teamMax?: number) => [
   { title: "سجّل", text: "املأ نموذج التسجيل وانضم إلى مجتمع المسابقة على واتساب." },
   { title: "اختر تحدّيك", text: "بعد إغلاق التسجيل نفتح صفحة الاختيار لتحدد المجال الذي تريده." },
-  { title: "ابنِ مع فريقك", text: "نكوّن الفرق (حتى 3 أفراد)، ثم تسلّمون مشروعكم على ثلاث مراحل." },
+  {
+    title: "ابنِ مع فريقك",
+    text: `نكوّن الفرق (${teamSizeText(teamMax)})، ثم تسلّمون مشروعكم على ثلاث مراحل.`,
+  },
 ];
 
-export function HowItWorks() {
+export function HowItWorks({ teamMax }: { teamMax?: number }) {
   return (
     <section aria-labelledby="how-title" className="py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -21,7 +25,7 @@ export function HowItWorks() {
         </Reveal>
 
         <ol className="mt-10 grid gap-4 md:grid-cols-3">
-          {STEPS.map((step, i) => (
+          {steps(teamMax).map((step, i) => (
             <li key={step.title}>
               <Reveal delay={i * 90} className="card h-full p-6 sm:p-8">
                 <span

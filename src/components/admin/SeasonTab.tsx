@@ -33,6 +33,8 @@ function SeasonCard({
   const [challengePickOpen, setChallengePickOpen] = useState(season.challengePickOpen);
   const [teamLookupOpen, setTeamLookupOpen] = useState(season.teamLookupOpen);
   const [whatsappLink, setWhatsappLink] = useState(season.whatsappLink);
+  const [teamMinSize, setTeamMinSize] = useState(String(season.teamMinSize ?? 1));
+  const [teamMaxSize, setTeamMaxSize] = useState(String(season.teamMaxSize ?? 4));
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
@@ -61,6 +63,8 @@ function SeasonCard({
         teamLookupOpen,
         whatsappLink,
         countdownDate: new Date(countdownDate).toISOString(),
+        teamMinSize: Number(teamMinSize),
+        teamMaxSize: Number(teamMaxSize),
       });
       if (!ok) {
         setError(data?.message ?? "تعذّر الحفظ.");
@@ -214,6 +218,35 @@ function SeasonCard({
           onChange={(e) => setCountdownDate(e.target.value)}
           className={inputClass}
         />
+      </div>
+
+      <div className="mb-5 grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold text-slate-400">أقل عدد في الفريق</label>
+          <input
+            type="number"
+            min={1}
+            max={12}
+            value={teamMinSize}
+            onChange={(e) => setTeamMinSize(e.target.value)}
+            className={inputClass}
+          />
+        </div>
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold text-slate-400">أكبر عدد في الفريق</label>
+          <input
+            type="number"
+            min={1}
+            max={12}
+            value={teamMaxSize}
+            onChange={(e) => setTeamMaxSize(e.target.value)}
+            className={inputClass}
+          />
+        </div>
+        <p className="text-xs leading-6 text-slate-500 sm:col-span-2">
+          يظهر الرقم الأكبر للزوار في الموقع («فرق حتى N أفراد»). لو قلّلته عن حجم فريق موجود، الفريق يفضل كما هو
+          ويظهر تنبيه في تبويب الفرق، ولا يمكن إضافة أعضاء جدد له.
+        </p>
       </div>
 
       {error && <p className="mb-3 text-sm text-red-400">{error}</p>}

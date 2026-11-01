@@ -112,6 +112,8 @@ export interface SeasonSettings {
   whatsappLink: string;
   challengePickOpen: boolean;
   teamLookupOpen: boolean;
+  teamMinSize: number;
+  teamMaxSize: number;
   isCurrent: boolean;
   createdAt: string;
   updatedAt: string;

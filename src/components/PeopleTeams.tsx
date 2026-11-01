@@ -138,18 +138,18 @@ export function PeopleTeams({
                     <p className="mt-1 text-[14px] leading-6 text-muted">{label(team.challenge)}</p>
                     {team.members.length > 0 && (
                       <ul className="mt-4 flex flex-wrap gap-2">
-                        {team.members.map((member) => (
+                        {team.members.map((member, idx) => (
                           <li
-                            key={member}
-                            className="flex items-center gap-2 rounded-full bg-surface2 py-1 ps-1 pe-3 text-[14px] font-medium text-ink"
+                            key={`${member}-${idx}`}
+                            className="flex max-w-full items-center gap-2 rounded-full bg-surface2 py-1 ps-1 pe-3 text-[14px] font-medium text-ink"
                           >
                             <span
                               aria-hidden
-                              className="flex h-6 w-6 items-center justify-center rounded-full bg-surface text-[12px] font-bold text-ink"
+                              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface text-[12px] font-bold text-ink"
                             >
                               {firstLetter(member)}
                             </span>
-                            {member}
+                            <span className="truncate">{member}</span>
                           </li>
                         ))}
                       </ul>

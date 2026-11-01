@@ -5,7 +5,6 @@ import { Copy, Eye, EyeOff, Loader2, Pencil, Plus, RefreshCw, Search, Trash2, X 
 import type { AdminTeam, Challenge, SeasonSettings, Student, TeamMember } from "@/lib/types";
 import { useChallengeOptions } from "@/lib/challengeOptions";
 
-const MAX_MEMBERS = 3;
 
 const inputClass =
   "w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-cyan-400/60";
@@ -37,6 +36,10 @@ export function TeamsTab({
   const current = seasons.find((s) => s.isCurrent) ?? seasons[0];
 
   const [seasonId, setSeasonId] = useState(current?.id ?? "");
+  // team size limits come from the season settings
+  const seasonRow = seasons.find((s) => s.id === seasonId) ?? current;
+  const maxMembers = seasonRow?.teamMaxSize ?? 4;
+  const minMembers = seasonRow?.teamMinSize ?? 1;
   const [filter, setFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -116,7 +119,7 @@ export function TeamsTab({
   };
 
   const togglePick = (id: string) =>
-    setPicked((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : prev.length >= MAX_MEMBERS ? prev : [...prev, id]));
+    setPicked((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : prev.length >= maxMembers ? prev : [...prev, id]));
 
   const saveMembers = async (teamId: string) => {
     const res = await fetch("/api/team-members", {
@@ -239,9 +242,16 @@ export function TeamsTab({
     });
   const selectedIds = items.filter((t) => selected.has(t.id)).map((t) => t.id);
   const drafts = items.filter((t) => !t.published);
+  const oversized = items.filter((t) => members.filter((m) => m.teamId === t.id).length > maxMembers).length;
 
   return (
     <div className="space-y-5">
+      {oversized > 0 && (
+        <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-xs leading-6 text-amber-200">
+          تنبيه: {oversized} فريق أكبر من الحد الأقصى الحالي ({maxMembers}). لم يتغيّر شيء فيها، لكن لا يمكن إضافة أعضاء
+          جدد لها، ويمكنك تقليصها أو رفع الحد من إعدادات الموسم.
+        </div>
+      )}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm font-bold text-white">
@@ -339,7 +349,8 @@ export function TeamsTab({
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <label className="text-xs font-semibold text-slate-400">
-                  اختر الأعضاء ({picked.length}/{MAX_MEMBERS}) من المسجّلين في هذا التحدي
+                  اختر الأعضاء ({picked.length}/{maxMembers}) من المسجّلين في هذا التحدي
+                  {picked.length > maxMembers && <span className="ms-2 text-amber-300">فوق الحد الأقصى</span>}
                 </label>
               </div>
               <div className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2">
@@ -359,7 +370,7 @@ export function TeamsTab({
                 )}
                 {candidates.map((s) => {
                   const checked = picked.includes(s.id);
-                  const disabled = !checked && picked.length >= MAX_MEMBERS;
+                  const disabled = !checked && picked.length >= maxMembers;
                   return (
                     <li key={s.id} className="border-b border-slate-800/70 last:border-0">
                       <label className={`flex cursor-pointer items-center gap-3 px-3 py-2.5 text-sm ${disabled ? "opacity-40" : "hover:bg-slate-900"}`}>
@@ -495,8 +506,10 @@ export function TeamsTab({
                         {ms.map((s) => (
                           <li key={s.id}>{s.fullName}</li>
                         ))}
-                        <li className="text-slate-500">
-                          {ms.length}/{MAX_MEMBERS}
+                        <li className={ms.length > maxMembers || ms.length < minMembers ? "text-amber-300" : "text-slate-500"}>
+                          {ms.length}/{maxMembers}
+                          {ms.length > maxMembers && " (فوق الحد الأقصى)"}
+                          {ms.length < minMembers && " (أقل من الحد الأدنى)"}
                         </li>
                       </ul>
                     )}

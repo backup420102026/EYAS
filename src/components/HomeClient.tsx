@@ -58,7 +58,7 @@ export function HomeClient({
           registrationOpen={registrationOpen}
           onRegisterClick={openRegistration}
         />
-        <HowItWorks />
+        <HowItWorks teamMax={season?.teamMaxSize} />
         <ChallengeHub challenges={challenges} resources={resources} />
         {season?.challengePickOpen && <ChallengePick challenges={challenges} />}
         <Roadmap />

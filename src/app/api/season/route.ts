@@ -62,7 +62,7 @@ export async function PATCH(request: NextRequest) {
   if (denied) return denied;
   try {
     const body = await request.json();
-    const { id, applicationsOpen, countdownDate, seasonName, isCurrent, whatsappLink, challengePickOpen, teamLookupOpen } = body ?? {};
+    const { id, applicationsOpen, countdownDate, seasonName, isCurrent, whatsappLink, challengePickOpen, teamLookupOpen, teamMinSize, teamMaxSize } = body ?? {};
 
     if (whatsappLink !== undefined && typeof whatsappLink === "string" && whatsappLink.trim() !== "" && !/^https:\/\/[^\s]+$/i.test(whatsappLink.trim())) {
       return NextResponse.json(
@@ -79,6 +79,22 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "not_found" }, { status: 404 });
     }
 
+    // team size: whole numbers, 1 <= min <= max <= 12 (existing bigger teams are left untouched)
+    const asSize = (v: unknown) =>
+      typeof v === "number" ? v : typeof v === "string" && v.trim() !== "" ? Number(v) : undefined;
+    const minSize = asSize(teamMinSize);
+    const maxSize = asSize(teamMaxSize);
+    if (minSize !== undefined || maxSize !== undefined) {
+      const nextMin = minSize ?? target.teamMinSize;
+      const nextMax = maxSize ?? target.teamMaxSize;
+      if (!Number.isInteger(nextMin) || !Number.isInteger(nextMax) || nextMin < 1 || nextMax > 12 || nextMin > nextMax) {
+        return NextResponse.json(
+          { error: "validation", message: "حجم الفريق: أرقام صحيحة، الحد الأدنى 1 على الأقل، والأقصى حتى 12، والأدنى لا يزيد عن الأقصى." },
+          { status: 400 }
+        );
+      }
+    }
+
     const updated = await db.transaction(async (tx) => {
       if (isCurrent === true) {
         await tx.update(seasonSettings).set({ isCurrent: false });
@@ -89,6 +105,8 @@ export async function PATCH(request: NextRequest) {
           ...(applicationsOpen !== undefined ? { applicationsOpen: Boolean(applicationsOpen) } : {}),
           ...(challengePickOpen !== undefined ? { challengePickOpen: Boolean(challengePickOpen) } : {}),
           ...(teamLookupOpen !== undefined ? { teamLookupOpen: Boolean(teamLookupOpen) } : {}),
+          ...(minSize !== undefined ? { teamMinSize: minSize } : {}),
+          ...(maxSize !== undefined ? { teamMaxSize: maxSize } : {}),
           ...(typeof whatsappLink === "string" ? { whatsappLink: whatsappLink.trim().slice(0, 300) } : {}),
           ...(isValidDate(countdownDate) ? { countdownDate: new Date(countdownDate) } : {}),
           ...(typeof seasonName === "string" && seasonName.trim() ? { seasonName: seasonName.trim() } : {}),

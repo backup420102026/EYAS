@@ -105,6 +105,8 @@ export const seasonSettings = pgTable("season_settings", {
   whatsappLink: text("whatsapp_link").notNull().default(""), // shown to students after they register
   challengePickOpen: boolean("challenge_pick_open").notNull().default(false), // "choose your challenge" form open?
   teamLookupOpen: boolean("team_lookup_open").notNull().default(false), // "find your team" form open?
+  teamMinSize: integer("team_min_size").notNull().default(1), // smallest sensible team (editable in the admin)
+  teamMaxSize: integer("team_max_size").notNull().default(4), // largest team the admin can build (editable in the admin)
   isCurrent: boolean("is_current").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

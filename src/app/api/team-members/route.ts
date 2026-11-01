@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { and, asc, eq, inArray, notInArray, ne } from "drizzle-orm";
 import { db } from "@/db";
-import { students, teamMembers, teams } from "@/db/schema";
+import { seasonSettings, students, teamMembers, teams } from "@/db/schema";
 import { requireAdmin } from "@/lib/adminAuth";
 import { clearCache } from "@/lib/cache";
 
 export const dynamic = "force-dynamic";
-
-const MAX_MEMBERS = 3;
 
 // Admin: every membership row.
 export async function GET(request: NextRequest) {
@@ -17,7 +15,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ items: rows });
 }
 
-// Admin: set the exact member list of a team. body: { teamId, studentIds: string[] } (1 to 3 students)
+// Admin: set the exact member list of a team. body: { teamId, studentIds: string[] } (at least 1; the maximum comes from the season settings)
 export async function POST(request: NextRequest) {
   const denied = requireAdmin(request);
   if (denied) return denied;
@@ -28,15 +26,34 @@ export async function POST(request: NextRequest) {
       ? Array.from(new Set<string>(body.studentIds.map(String)))
       : [];
 
-    if (studentIds.length < 1 || studentIds.length > MAX_MEMBERS) {
+    if (studentIds.length < 1) {
       return NextResponse.json(
-        { error: "validation", message: `عدد أعضاء الفريق من 1 إلى ${MAX_MEMBERS}.` },
+        { error: "validation", message: "اختر عضوًا واحدًا على الأقل." },
         { status: 400 }
       );
     }
 
     const [team] = await db.select().from(teams).where(eq(teams.id, teamId)).limit(1);
     if (!team) return NextResponse.json({ error: "validation", message: "الفريق غير موجود." }, { status: 400 });
+
+    // the largest team size is a season setting. A team that is already bigger than the limit
+    // (the admin lowered it later) can still be saved, it just cannot grow.
+    const [season] = await db
+      .select()
+      .from(seasonSettings)
+      .where(eq(seasonSettings.id, team.seasonId ?? ""))
+      .limit(1);
+    const maxSize = season?.teamMaxSize ?? 4;
+    const existing = await db
+      .select({ studentId: teamMembers.studentId })
+      .from(teamMembers)
+      .where(eq(teamMembers.teamId, teamId));
+    if (studentIds.length > maxSize && studentIds.length > existing.length) {
+      return NextResponse.json(
+        { error: "validation", message: `الحد الأقصى لحجم الفريق في هذا الموسم ${maxSize}.` },
+        { status: 400 }
+      );
+    }
 
     const found = await db.select().from(students).where(inArray(students.id, studentIds));
     if (found.length !== studentIds.length) {
