@@ -6,7 +6,8 @@ import { X, CheckCircle2, Loader2 } from "lucide-react";
 import { isEmail, isPhone } from "@/lib/contact";
 import { useEscape } from "@/lib/useEscape";
 
-const EMPTY = { fullName: "", grade: "", email: "", phone: "", guardianConsent: false };
+// أضفنا parentPhone هنا في الـ state عشان يقرأ القيمة لو المستخدم كتبها
+const EMPTY = { fullName: "", grade: "", email: "", phone: "", parentPhone: "", guardianConsent: false };
 
 export function RegistrationModal({
   onClose,
@@ -29,8 +30,9 @@ export function RegistrationModal({
     e.preventDefault();
     setError("");
 
+    // التحقق من الحقول الأساسية فقط (رقم ولي الأمر ليس إجبارياً هنا)
     if (!form.fullName.trim() || !form.grade.trim() || !form.email.trim() || !form.phone.trim()) {
-      setError("فضلاً أكمل جميع الحقول.");
+      setError("فضلاً أكمل جميع الحقول الأساسية.");
       return;
     }
     if (!isEmail(form.email.trim().toLowerCase())) {
@@ -41,6 +43,13 @@ export function RegistrationModal({
       setError("رقم الهاتف غير صحيح (مثال: 01012345678).");
       return;
     }
+    
+    // لو المستخدم كتب رقم ولي الأمر، نتحقق من صحته، ولو سابه فاضي نتخطى الشرط عادي
+    if (form.parentPhone.trim() && !isPhone(form.parentPhone)) {
+      setError("رقم ولي الأمر غير صحيح (مثال: 01012345678).");
+      return;
+    }
+
     if (!form.guardianConsent) {
       setError("يجب تأكيد موافقة ولي الأمر للتسجيل.");
       return;
@@ -134,18 +143,31 @@ export function RegistrationModal({
                 autoComplete="name"
               />
             </div>
+
+            {/* 1. الصف الدراسي كـ Dropdown */}
             <div>
               <label htmlFor="reg-grade" className="mb-2 block text-[15px] font-semibold text-ink">
                 الصف الدراسي
               </label>
-              <input
+              <select
                 id="reg-grade"
                 value={form.grade}
                 onChange={(e) => update("grade", e.target.value)}
-                className="field"
-                placeholder="مثال: الصف الثاني الثانوي"
-              />
+                className="field bg-surface text-ink"
+              >
+                <option value="" disabled>
+                  اختر الصف الدراسي
+                </option>
+                <option value="الصف الأولي الاعدادي">الصف الأولي الاعدادي</option>
+                <option value="الصف الثاني الاعدادي">الصف الثاني الاعدادي</option>
+                <option value="الصف الثالث الاعدادي">الصف الثالث الاعدادي</option>
+                <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
+                <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
+                <option value="الصف الثالث الثانوي">الصف الثالث الثانوي</option>
+              </select>
             </div>
+
+            {/* 2. الهواتف: الطالب بجانب ولي الأمر (اختياري) */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="reg-phone" className="mb-2 block text-[15px] font-semibold text-ink">
@@ -162,21 +184,37 @@ export function RegistrationModal({
                   autoComplete="tel"
                 />
               </div>
+              
               <div>
-                <label htmlFor="reg-email" className="mb-2 block text-[15px] font-semibold text-ink">
-                  البريد الإلكتروني
+                <label htmlFor="reg-parent-phone" className="mb-2 block text-[15px] font-semibold text-ink">
+                  رقم ولي الأمر <span className="text-xs text-muted font-normal">(اختياري)</span>
                 </label>
                 <input
-                  id="reg-email"
-                  type="email"
+                  id="reg-parent-phone"
+                  type="tel"
                   dir="ltr"
-                  value={form.email}
-                  onChange={(e) => update("email", e.target.value)}
+                  value={form.parentPhone}
+                  onChange={(e) => update("parentPhone", e.target.value)}
                   className="field"
-                  placeholder="name@email.com"
-                  autoComplete="email"
+                  placeholder="01012345678"
                 />
               </div>
+            </div>
+
+            <div>
+              <label htmlFor="reg-email" className="mb-2 block text-[15px] font-semibold text-ink">
+                البريد الإلكتروني
+              </label>
+              <input
+                id="reg-email"
+                type="email"
+                dir="ltr"
+                value={form.email}
+                onChange={(e) => update("email", e.target.value)}
+                className="field"
+                placeholder="name@email.com"
+                autoComplete="email"
+              />
             </div>
 
             <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-line bg-surface2 p-4 text-[14px] leading-7 text-muted">
@@ -196,7 +234,7 @@ export function RegistrationModal({
               </p>
             )}
 
-            <button type="submit" disabled={submitting} className="btn-primary w-full">
+            <button type="submit" disabled={submitting} className="btn-pattern w-full btn-primary">
               {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
               تسجيل
             </button>
