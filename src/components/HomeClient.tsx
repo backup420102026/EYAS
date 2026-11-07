@@ -14,6 +14,7 @@ import { ChallengePick } from "./ChallengePick";
 import { FindTeam } from "./FindTeam";
 import { TeamPortal } from "./TeamPortal";
 import { CtaBand } from "./CtaBand";
+import { Faq } from "./Faq";
 import { Footer } from "./Footer";
 import { RegistrationModal } from "./RegistrationModal";
 import type { Challenge, Person, PublicTeam, Resource, SeasonSettings } from "@/lib/types";
@@ -66,6 +67,7 @@ export function HomeClient({
         {season?.teamLookupOpen && <FindTeam />}
         <PeopleTeams people={people} teams={teams} challenges={challenges} />
         <TeamPortal />
+        <Faq />
         <CtaBand registrationOpen={registrationOpen} onRegisterClick={openRegistration} />
       </main>
       <Footer />

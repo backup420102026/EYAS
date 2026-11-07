@@ -6,6 +6,7 @@ const LINKS = [
   { href: "#awards", label: "الأوسمة" },
   { href: "#teams", label: "المشاركون والفرق" },
   { href: "#submit", label: "تسليم المشاريع" },
+  { href: "#faq", label: "الأسئلة الشائعة" },
 ];
 
 export function Footer() {

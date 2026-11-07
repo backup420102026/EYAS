@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: "#awards", label: "الأوسمة" },
   { href: "#teams", label: "المشاركون والفرق" },
   { href: "#submit", label: "التسليم" },
+  { href: "#faq", label: "الأسئلة الشائعة" },
 ];
 
 export function Navbar({
@@ -61,7 +62,7 @@ export function Navbar({
           <Logo />
         </a>
 
-        <div className="hidden items-center gap-8 lg:flex">
+        <div className="hidden items-center gap-6 xl:flex">
           {NAV_LINKS.map((link) => (
             <a
               key={link.href}
@@ -73,7 +74,7 @@ export function Navbar({
           ))}
         </div>
 
-        <div className="hidden items-center gap-3 lg:flex">
+        <div className="hidden items-center gap-3 xl:flex">
           <button
             onClick={toggleTheme}
             aria-label={themeLabel}
@@ -87,7 +88,7 @@ export function Navbar({
         </div>
 
         <button
-          className="flex h-11 w-11 items-center justify-center rounded-xl border border-line-strong bg-surface text-ink lg:hidden"
+          className="flex h-11 w-11 items-center justify-center rounded-xl border border-line-strong bg-surface text-ink xl:hidden"
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? "إغلاق القائمة" : "فتح القائمة"}
           aria-expanded={open}
@@ -97,7 +98,7 @@ export function Navbar({
       </nav>
 
       {open && (
-        <div className="border-t border-line bg-bg lg:hidden">
+        <div className="border-t border-line bg-bg xl:hidden">
           <div className="mx-auto max-w-7xl px-4 pb-5 sm:px-6">
             {NAV_LINKS.map((link) => (
               <a
